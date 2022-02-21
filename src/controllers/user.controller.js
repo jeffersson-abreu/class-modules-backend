@@ -1,3 +1,4 @@
+const { isAuthenticated } = require('../middlewares/permissions');
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const express = require("express");
@@ -59,6 +60,15 @@ router.post('/login', async (req, res) => {
 
   const token = generateAccessToken(user);
   res.send({ user, token })
+
+});
+
+// Return the user profile if authenticated
+router.get('/profile', isAuthenticated, async (req, res) => {
+
+  const user = await User.findOne({ where: { id: req.user.id } });
+  user.password = undefined;
+  res.status(200).json(user);
 
 });
 

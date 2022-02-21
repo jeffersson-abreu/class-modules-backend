@@ -80,4 +80,4 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
   return res.status(204).send()
 });
 
-module.exports = app => app.use('/module', router)
+module.exports = app => app.use('/modules', router)

@@ -14,4 +14,4 @@ controllers(app);
 // Database sync
 database.sync();
 
-app.listen(3000)
+app.listen(8000)
