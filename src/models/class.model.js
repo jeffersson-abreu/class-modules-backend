@@ -11,8 +11,18 @@ const Class = database.define('Class', {
   },
 
   name: {
-    type: Sequelize.STRING,
+    type: Sequelize.STRING(255),
     allowNull: false
+  },
+
+  description: {
+    type: Sequelize.STRING(2048),
+    allowNull: false
+  },
+
+  duration: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
   },
 
   date: {

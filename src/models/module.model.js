@@ -11,8 +11,19 @@ const Module = database.define('Module', {
   },
 
   name: {
-    type: Sequelize.STRING,
+    type: Sequelize.STRING(255),
     allowNull: false
+  },
+
+  description: {
+    type: Sequelize.STRING(2048),
+    allowNull: false
+  },
+
+  classes: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0
   }
 },
   {

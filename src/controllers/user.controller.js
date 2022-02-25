@@ -67,6 +67,13 @@ router.post('/login', async (req, res) => {
 router.get('/profile', isAuthenticated, async (req, res) => {
 
   const user = await User.findOne({ where: { id: req.user.id } });
+
+  if (!user) {
+    return res.status(404).send({
+      'message': 'Perfil não encontrado'
+    });
+  }
+
   user.password = undefined;
   res.status(200).json(user);
 

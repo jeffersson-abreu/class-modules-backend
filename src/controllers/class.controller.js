@@ -1,4 +1,5 @@
 const { isAuthenticated } = require('../middlewares/permissions');
+const Module = require('../models/module.model');
 const Class = require('../models/class.model');
 const express = require("express");
 
@@ -7,14 +8,25 @@ const router = express.Router();
 
 // List all classes, do not need authentication
 router.get('/', async (req, res) => {
-  const modules = await Class.findAll();
+  const modules = await Class.findAll({
+    order: [['name', 'ASC']]
+  });
   return res.json(modules);
 });
 
 
 // Resister a class if user is authenticated.
 router.post('/', isAuthenticated, async (req, res) => {
-  const { name, date, module } = req.body;
+  const { name, module } = req.body;
+
+  // Check if the module really exists
+  const _module = await Module.findOne({ where: { id: module } });
+
+  if (!_module) {
+    return res.status(400).json({
+      message: "Módulo desconhecido"
+    })
+  }
 
   // Check for a class with same name. Case
   // the class exists we return an error
@@ -25,7 +37,12 @@ router.post('/', isAuthenticated, async (req, res) => {
   }
 
   // Create the class
-  const _class = await Class.create({ name, date, module });
+  const _class = await Class.create(req.body);
+
+  // Increase class count
+  _module.classes += 1
+  await _module.save();
+
   return res.status(201).json(_class);
 });
 
@@ -34,6 +51,16 @@ router.post('/', isAuthenticated, async (req, res) => {
 router.patch('/:id', isAuthenticated, async (req, res) => {
 
   const { id } = req.params;
+  const { module } = req.body;
+
+  // Check if the module really exists
+  const _module = await Module.findOne({ where: { id: module } });
+
+  if (!_module) {
+    return res.status(400).json({
+      message: "Módulo desconhecido"
+    })
+  }
 
   const _class = await Class.findOne({ where: { id } });
 
@@ -65,6 +92,11 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
       message: "Esta aula não existe"
     })
   }
+
+  // Decrease module class counter
+  const module = await Module.findOne({ where: { id: _class.module } });
+  module.classes -= 1;
+  await module.save();
 
   // remove the module
   await _class.destroy();

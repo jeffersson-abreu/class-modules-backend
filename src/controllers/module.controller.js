@@ -7,7 +7,9 @@ const router = express.Router();
 
 // List all modules, do not need authentication
 router.get('/', async (req, res) => {
-  const modules = await Module.findAll();
+  const modules = await Module.findAll({
+    order: [['name', 'ASC']]
+  });
   return res.json(modules);
 });
 
@@ -16,7 +18,11 @@ router.get('/', async (req, res) => {
 router.get('/:module/classes', async (req, res) => {
   const { module } = req.params;
 
-  const modules = await Class.findAll({ where: { module } });
+  const modules = await Class.findAll({
+    where: { module: module },
+    order: [['name', 'ASC']]
+  });
+
   return res.json(modules);
 });
 
@@ -34,7 +40,7 @@ router.post('/', isAuthenticated, async (req, res) => {
   }
 
   // Create the module
-  const module = await Module.create({ name });
+  const module = await Module.create(req.body);
   return res.status(201).json(module);
 });
 

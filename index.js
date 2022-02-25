@@ -7,10 +7,10 @@ const cors = require('cors')
 const app = express();
 
 app.use((req, res, next) => {
-  // Allow only ower front-end make requests in database. 
-  // All methods supported are also listed listed
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header("Access-Control-Allow-Methods", 'GET,PATCH,POST,DELETE');
+  // All methods supported are listed bellow
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,PATCH,POST,DELETE");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Authorization, Content-Type, Accept");
   app.use(cors());
   next();
 });
@@ -23,6 +23,11 @@ app.use(bodyParser.json());
 controllers(app);
 
 // Database sync
-database.sync();
+database.sync()
+  .catch(() => {
+    console.log("Database connection error");
+    console.log("Make sure database is running");
+    process.exit(1);
+  });
 
-app.listen(8000)
+app.listen(8000, '192.168.0.2')
