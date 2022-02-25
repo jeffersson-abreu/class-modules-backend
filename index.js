@@ -30,4 +30,4 @@ database.sync()
     process.exit(1);
   });
 
-app.listen(8000, '192.168.0.2')
+app.listen(8000, 'localhost')
